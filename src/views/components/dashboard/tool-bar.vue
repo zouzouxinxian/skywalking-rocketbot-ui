@@ -26,6 +26,17 @@ limitations under the License. -->
         <div>{{ this.$t('serviceFilter') }}</div>
         <input type="text" :value="rocketOption.keywordService" @change="searchServices($event.target.value)" />
       </div>
+
+      <!-- 添加项目选择 -->
+      <ToolBarSelect
+        v-if="compType === dashboardType.SERVICE"
+        @onChoose="selectService"
+        :title="this.$t('currentProject')"
+        :current="stateDashboard.currentService"
+        :data="stateDashboard.services"
+        icon="package"
+      />
+
       <ToolBarSelect
         v-if="compType === dashboardType.SERVICE"
         @onChoose="selectService"

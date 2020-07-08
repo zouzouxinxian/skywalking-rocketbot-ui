@@ -24,6 +24,7 @@ const m = {
   reload: '刷新',
   usermode: '用户模式',
   editmode: '编辑模式',
+  currentProject: '当前项目',
   currentService: '当前服务',
   currentEndpoint: '当前端点',
   currentInstance: '当前实例',

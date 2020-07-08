@@ -13,44 +13,57 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
-  <header class="rk-header flex-h">
-    <div class="flex-h">
-      <svg class="svg-logo icon" style="margin-right:35px;margin-top:-5px">
-        <use xlink:href="#logo-sw"></use>
-      </svg>
-      <span class="grey rocketbot">Rocketbot</span>
-      <router-link class="nav-link mr-20" to="/" exact>
-        <svg class="icon sm vm">
-          <use xlink:href="#chart"></use>
-        </svg>
-        <span class="vm hide-xs ml-5">{{ this.$t('dashboard') }}</span>
-      </router-link>
-      <router-link class="nav-link mr-20" to="/topology">
-        <svg class="icon sm vm">
-          <use xlink:href="#issues"></use>
-        </svg>
-        <span class="vm hide-xs ml-5">{{ this.$t('topology') }}</span>
-      </router-link>
-      <router-link class="nav-link mr-20" to="/trace">
-        <svg class="icon sm vm">
-          <use xlink:href="#merge"></use>
-        </svg>
-        <span class="vm hide-xs ml-5">{{ this.$t('trace') }}</span>
-      </router-link>
-      <router-link class="nav-link mr-20" to="/profile">
+  <header class="rk-header">
+    <div class="">
+      <ul>
+        <!-- <li >
+          <svg class="svg-logo icon" style="margin-right:35px;margin-top:-5px">
+            <use xlink:href="#logo-sw"></use>
+          </svg>
+          <span class="grey rocketbot">Rocketbot</span>
+        </li> -->
+        <li class="block">
+          <router-link class="nav-link mr-20" to="/" exact>
+            <svg class="icon sm vm">
+              <use xlink:href="#chart"></use>
+            </svg>
+            <span class="vm hide-xs ml-5">{{ this.$t('dashboard') }}</span>
+          </router-link>
+        </li>
+        <li class="block">
+          <router-link class="nav-link mr-20" to="/topology">
+            <svg class="icon sm vm">
+              <use xlink:href="#issues"></use>
+            </svg>
+            <span class="vm hide-xs ml-5">{{ this.$t('topology') }}</span>
+          </router-link>
+        </li>
+        <li class="block">
+          <router-link class="nav-link mr-20" to="/trace">
+            <svg class="icon sm vm">
+              <use xlink:href="#merge"></use>
+            </svg>
+            <span class="vm hide-xs ml-5">{{ this.$t('trace') }}</span>
+          </router-link>
+        </li>
+        <li class="block">
+          <router-link class="nav-link mr-20" to="/alarm">
+            <svg class="icon sm vm">
+              <use xlink:href="#spam"></use>
+            </svg>
+            <span class="vm hide-xs ml-5">{{ this.$t('alarm') }}</span>
+          </router-link>
+        </li>
+      </ul>
+
+      <!-- <router-link class="nav-link mr-20" to="/profile">
         <svg class="icon sm vm">
           <use xlink:href="#merge"></use>
         </svg>
         <span class="vm hide-xs ml-5">{{ this.$t('profile') }}</span>
-      </router-link>
-      <router-link class="nav-link mr-20" to="/alarm">
-        <svg class="icon sm vm">
-          <use xlink:href="#spam"></use>
-        </svg>
-        <span class="vm hide-xs ml-5">{{ this.$t('alarm') }}</span>
-      </router-link>
+      </router-link> -->
     </div>
-    <div class="flex-h">
+    <!-- <div class="flex-h">
       <a class="rk-btn mr-5 sm" :class="auto ? 'blue' : 'ghost'" @click="handleAuto">
         <span class="vm">{{ this.$t('auto') }}</span>
       </a>
@@ -66,7 +79,7 @@ limitations under the License. -->
         </svg>
         <span class="vm">{{ this.$t('reload') }}</span>
       </a>
-    </div>
+    </div> -->
   </header>
 </template>
 
@@ -122,7 +135,8 @@ limitations under the License. -->
   .rk-header {
     flex-shrink: 0;
     justify-content: space-between;
-    height: 48px;
+    height: 100%;
+    width: 8%;
     padding-right: 15px;
     padding-left: 15px;
     font-size: 13px;
@@ -130,6 +144,10 @@ limitations under the License. -->
     z-index: 9;
     background-color: #252a2f;
     box-shadow: 0 1px 2px 0 rgba(26, 24, 29, 0.24);
+
+    .block {
+      margin: 20px 0;
+    }
     .svg-logo {
       width: 90px;
       height: 22px;

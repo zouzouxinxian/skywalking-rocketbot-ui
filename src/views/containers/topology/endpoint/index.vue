@@ -46,6 +46,7 @@ limitations under the License. -->
         </div>
       </span>
       <ToolBarSelect :selectable="false" :title="this.$t('currentService')" :current="current" icon="package" />
+
       <ToolBarEndpointSelect
         @onChoose="selectEndpoint"
         :title="$t('currentEndpoint')"

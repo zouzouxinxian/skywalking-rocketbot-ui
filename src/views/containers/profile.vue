@@ -14,7 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 
 <template>
-  <div class="rk-profile flex-v">
+  <div
+    class="rk-profile flex-v"
+    style="flex-grow:1;height: 100%;overflow:hidden;position: absolute;width: 92%;left: 8%;"
+  >
     <ProfileHeader
       :headerSource="profile.headerSource"
       :newTaskFields="profile.newTaskFields"

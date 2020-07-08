@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
-  <div class="rk-alarm flex-v">
+  <div class="rk-alarm flex-v" style="flex-grow:1;height: 100%;overflow:hidden;position: absolute;width: 92%;left: 8%;">
     <AlarmTool :total="rocketAlarm.total" />
     <AlarmTable :data="rocketAlarm.alarmService" />
   </div>

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
-  <div class="link-topo-aside-box" style="padding:0;">
+  <div class="link-topo-aside-box" style="padding:0;left:300px;">
     <TopoSelect :current="service" :data="services" @onChoose="handleChange" />
     <!-- <div style="width: 50px;background-color:transport;"></div> -->
     <!-- <TopoSelect :current="service" :data="services" @onChoose="handleChange" /> -->
@@ -33,8 +33,8 @@ limitations under the License. -->
     @Action('rocketTopo/GET_TOPO') public GET_TOPO: any;
     @Action('rocketTopo/GET_SERVICES') private GET_SERVICES: any;
     @Mutation('rocketTopoGroup/UNSELECT_GROUP') private UNSELECT_GROUP: any;
-    private services = [{ key: 0, label: 'All services' }];
-    private service = { key: 0, label: 'All services' };
+    private services = [{ key: 0, label: 'All project' }];
+    private service = { key: 0, label: 'All project' };
 
     private fetchData() {
       this.GET_SERVICES({ duration: this.durationTime }).then((json: any[]) => {

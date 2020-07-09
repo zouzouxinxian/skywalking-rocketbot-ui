@@ -16,18 +16,26 @@ limitations under the License. -->
 <template>
   <aside class="link-topo-aside">
     <Radial v-if="radioStatus" :datas="{ nodes: stateTopo.nodes, calls: stateTopo.calls }" />
-    <svg class="link-topo-aside-btn icon cp lg" @click="showRadial()" :style="`position:absolute;left:290px;`">
+    <svg class="link-topo-aside-btn icon cp lg" @click="showRadial()" :style="`position:absolute;left:590px;`">
       <use xlink:href="#issues" />
     </svg>
     <svg
       v-if="showServerInfo"
       class="link-topo-aside-btn icon cp lg"
       @click="show = !show"
-      :style="`position:absolute;left:290px;transform: rotate(${show ? 0 : 180}deg);top:45px;`"
+      :style="`position:absolute;left:590px;transform: rotate(${show ? 0 : 180}deg);top:45px;`"
     >
       <use xlink:href="#chevron-left" />
     </svg>
     <TopoService />
+
+    <TopoProject />
+
+      <div class='choose-time'>
+        <span class="sm b grey mr-5">{{ this.$t('timeRange') }}:</span>
+        <RkDate class="sm" v-model="time" position="bottom" format="YYYY-MM-DD HH:mm:ss" />
+      </div>
+
     <div v-if="show">
       <div class="link-topo-aside-box" style="top:45px" v-if="!stateTopo.selectedServiceCall && showServerInfo">
         <div class="mb-20">
@@ -70,17 +78,44 @@ limitations under the License. -->
   import Radial from './radial.vue';
   import TopoChart from './topo-chart.vue';
   import TopoService from './topo-services.vue';
-  import TopoDetectPoint from './topo-detect-point.vue';
+  import TopoProject from './topo-project.vue';
 
+  import TopoDetectPoint from './topo-detect-point.vue';
+  import { Duration, Option } from '@/types/global';
+  import TraceSelect from '../common/trace-select.vue';
+  
   @Component({
     components: {
       TopoChart,
       TopoService,
+      TopoProject,
       Radial,
       TopoDetectPoint,
     },
   })
   export default class TopoAside extends Vue {
+       @State('rocketbot') private rocketbotGlobal: any;
+    @State('rocketTrace') private rocketTrace: any;
+    // @Getter('durationTime') private durationTime: any;
+    @Getter('duration') private duration: any;
+    @Action('RESET_DURATION') private RESET_DURATION: any;
+    @Action('rocketTrace/GET_SERVICES') private GET_SERVICES: any;
+    @Action('rocketTrace/GET_INSTANCES') private GET_INSTANCES: any;
+    @Action('rocketTrace/GET_TRACELIST') private GET_TRACELIST: any;
+    @Action('rocketTrace/SET_TRACE_FORM') private SET_TRACE_FORM: any;
+    @Mutation('rocketTrace/SET_TRACE_FORM_ITEM')
+    private SET_TRACE_FORM_ITEM: any;
+    private service: Option = { label: 'All', key: '' };
+    private time!: Date[];
+    private status: boolean = true;
+    private maxTraceDuration: string = localStorage.getItem('maxTraceDuration') || '';
+    private minTraceDuration: string = localStorage.getItem('minTraceDuration') || '';
+    private instance: Option = { label: 'All', key: '' };
+    private endpointName: string = localStorage.getItem('endpointName') || '';
+    private traceId: string = localStorage.getItem('traceId') || '';
+    private traceState: Option = { label: 'All', key: 'ALL' };
+
+
     @State('rocketTopo') private stateTopo!: topoState;
     @Getter('intervalTime') private intervalTime: any;
     @Getter('durationTime') private durationTime: any;
@@ -109,6 +144,11 @@ limitations under the License. -->
 
     private created() {
       this.SET_COMPS_TREE(this.initState.tree);
+        this.endpointName = this.$route.query.endpointname
+        ? this.$route.query.endpointname.toString()
+        : this.endpointName;
+      this.traceId = this.$route.query.traceid ? this.$route.query.traceid.toString() : this.traceId;
+      this.time = [this.rocketbotGlobal.durationRow.start, this.rocketbotGlobal.durationRow.end];
     }
 
     private handleRefresh() {
@@ -121,6 +161,13 @@ limitations under the License. -->
     private mounted() {
       this.resize();
       window.addEventListener('resize', this.resize);
+            this.getTraceList();
+      if (this.service && this.service.key) {
+        this.GET_INSTANCES({
+          duration: this.durationTime,
+          serviceId: this.service.key,
+        });
+      }
     }
 
     private beforeDestroy() {
@@ -145,6 +192,146 @@ limitations under the License. -->
     private showRadial() {
       this.radioStatus = !this.radioStatus;
     }
+
+    
+    private globalTimeFormat(time: Date[]) {
+      let step = 'MINUTE';
+      const unix = Math.round(time[1].getTime()) - Math.round(time[0].getTime());
+      if (unix <= 60 * 60 * 1000) {
+        step = 'MINUTE';
+      } else if (unix <= 24 * 60 * 60 * 1000) {
+        step = 'HOUR';
+      } else {
+        step = 'DAY';
+      }
+      return {
+        start: this.dateFormat(time[0], step),
+        end: this.dateFormat(time[1], step),
+        step,
+      };
+    }
+    private dateFormat(date: Date, step: string) {
+      const year = date.getFullYear();
+      const monthTemp = date.getMonth() + 1;
+      let month: string = `${monthTemp}`;
+      if (monthTemp < 10) {
+        month = `0${monthTemp}`;
+      }
+
+      const dayTemp = date.getDate();
+      let day: string = `${dayTemp}`;
+      if (dayTemp < 10) {
+        day = `0${dayTemp}`;
+      }
+      if (step === 'DAY' || step === 'MONTH') {
+        return `${year}-${month}-${day}`;
+      }
+      const hourTemp = date.getHours();
+      let hour: string = `${hourTemp}`;
+      if (hourTemp < 10) {
+        hour = `0${hourTemp}`;
+      }
+      if (step === 'HOUR') {
+        return `${year}-${month}-${day} ${hour}`;
+      }
+      const minuteTemp = date.getMinutes();
+      let minute: string = `${minuteTemp}`;
+      if (minuteTemp < 10) {
+        minute = `0${minuteTemp}`;
+      }
+      if (step === 'MINUTE') {
+        return `${year}-${month}-${day} ${hour}${minute}`;
+      }
+    }
+        private chooseService(i: any) {
+      if (this.service.key === i.key) {
+        return;
+      }
+      this.instance = { label: 'All', key: '' };
+      this.service = i;
+      if (i.key === '') {
+        return;
+      }
+      this.GET_INSTANCES({ duration: this.durationTime, serviceId: i.key });
+    }
+
+    private chooseStatus(i: any) {
+      this.traceState = i;
+    }
+
+    private getTraceList() {
+      this.GET_SERVICES({ duration: this.durationTime });
+      const temp: any = {
+        queryDuration: this.globalTimeFormat([
+          new Date(
+            this.time[0].getTime() +
+              (parseInt(this.rocketbotGlobal.utc, 10) + new Date().getTimezoneOffset() / 60) * 3600000,
+          ),
+          new Date(
+            this.time[1].getTime() +
+              (parseInt(this.rocketbotGlobal.utc, 10) + new Date().getTimezoneOffset() / 60) * 3600000,
+          ),
+        ]),
+        traceState: this.traceState.key,
+        paging: { pageNum: 1, pageSize: 15, needTotal: true },
+        queryOrder: this.rocketTrace.traceForm.queryOrder,
+      };
+
+      if (this.service.key) {
+        temp.serviceId = this.service.key;
+      }
+      if (this.instance.key) {
+        temp.serviceInstanceId = this.instance.key;
+      }
+      if (this.maxTraceDuration) {
+        temp.maxTraceDuration = this.maxTraceDuration;
+        localStorage.setItem('maxTraceDuration', this.maxTraceDuration);
+      }
+      if (this.minTraceDuration) {
+        temp.minTraceDuration = this.minTraceDuration;
+        localStorage.setItem('minTraceDuration', this.minTraceDuration);
+      }
+      if (this.endpointName) {
+        temp.endpointName = this.endpointName;
+        localStorage.setItem('endpointName', this.endpointName);
+      }
+      if (this.traceId) {
+        temp.traceId = this.traceId;
+        localStorage.setItem('traceId', this.traceId);
+      }
+      this.SET_TRACE_FORM(temp);
+
+      this.$eventBus.$emit('SET_LOADING_TRUE', () => {
+        this.GET_TRACELIST().then(() => {
+          this.$eventBus.$emit('SET_LOADING_FALSE');
+        });
+      });
+    }
+
+    private clearSearch() {
+      this.RESET_DURATION();
+      this.status = true;
+      this.maxTraceDuration = '';
+      localStorage.removeItem('maxTraceDuration');
+      this.minTraceDuration = '';
+      localStorage.removeItem('minTraceDuration');
+      this.service = { label: 'All', key: '' };
+      this.instance = { label: 'All', key: '' };
+      this.endpointName = '';
+      localStorage.removeItem('endpointName');
+      this.traceId = '';
+      localStorage.removeItem('traceId');
+      this.traceState = { label: 'All', key: 'ALL' };
+      this.SET_TRACE_FORM_ITEM({ type: 'queryOrder', data: '' });
+      this.getTraceList();
+    }
+
+    @Watch('rocketbotGlobal.durationRow')
+    private durationRowWatch(value: Duration) {
+      this.time = [value.start, value.end];
+    }
+
+
   }
 </script>
 <style lang="scss">
@@ -233,5 +420,11 @@ limitations under the License. -->
     to {
       width: 280px;
     }
+  }
+
+  .choose-time{
+    position:absolute;
+    left:310px;
+    color: #fff;
   }
 </style>

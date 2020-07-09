@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 
 <template>
-  <div class="rk-topo" style="flex-grow:1;height: 100%;overflow:hidden;position: absolute;width: 92%;left: 8%;">
+  <div class="rk-topo" style="flex-grow:1;height: 100%;overflow:hidden;position: absolute;width: 90%;left: 10%;">
     <Topo
       :current="current"
       @setDialog="(type) => (dialog = type)"

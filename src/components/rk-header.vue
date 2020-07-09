@@ -136,7 +136,7 @@ limitations under the License. -->
     flex-shrink: 0;
     justify-content: space-between;
     height: 100%;
-    width: 8%;
+    width: 10%;
     padding-right: 15px;
     padding-left: 15px;
     font-size: 13px;

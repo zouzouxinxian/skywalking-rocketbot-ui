@@ -424,7 +424,11 @@ limitations under the License. -->
 
   .choose-time{
     position:absolute;
-    left:310px;
+    left:650px;
     color: #fff;
+    width: 400px;
+    span{
+      color:#fff;
+    }
   }
 </style>

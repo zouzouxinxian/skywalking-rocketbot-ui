@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
   <div id="app">
-    <RkHeader />
-
     <!-- <RkHeader @reloadFooter="reloadFooter" /> -->
     <router-view></router-view>
     <!-- <RkFooter ref="footer" /> -->

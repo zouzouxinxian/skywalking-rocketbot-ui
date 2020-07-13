@@ -16,7 +16,7 @@ limitations under the License. -->
 <template>
   <div
     class="rk-profile flex-v"
-    style="flex-grow:1;height: 100%;overflow:hidden;position: absolute;width: 90%;left: 10%;"
+    style="flex-grow:1;height: 100%;overflow:hidden;"
   >
     <ProfileHeader
       :headerSource="profile.headerSource"

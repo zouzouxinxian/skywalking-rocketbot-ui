@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type IOption = {
+export interface IOption {
   key: string | number;
   label: string;
   param?: string;
-};
+}
 export interface ITaskOptions {
   service: IOption;
   endpointName: string;
